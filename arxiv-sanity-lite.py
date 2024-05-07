@@ -2,8 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+import pandas as pd
+
 
 ROOT_URL = "https://arxiv-sanity-lite.com/?page_number=%d"
+
 
 def crawl_arxiv_sanity_lite():
     all_pages = [ ]
@@ -29,5 +32,35 @@ def crawl_arxiv_sanity_lite():
         json.dump(all_pages, fw)
         
     return all_pages
+
+def convert_data_to_pd(all_pages):
     
+    # data = json.load(open('./tmp/arxiv05_page_2000_final.json', 'r'))
+
+    data_csv = {
+        'authors' : [],
+        'id': [],
+        'summary': [],
+        'tags': [],
+        'thumb_url': [],
+        'time': [],
+        'title': [],
+        'utags': [],
+        'weight': [],
+        
+    }
+    for papers in all_pages:
+        for pp in papers:
+            for k, v in pp.items():
+                data_csv[k].append(v)
+
+    df_data = pd.DataFrame(data_csv)
+    df_data.to_csv('./arxiv05.csv')
+
+    return df_data
+
 all_pages = crawl_arxiv_sanity_lite()
+
+df_data = convert_data_to_pd(all_pages)
+
+
