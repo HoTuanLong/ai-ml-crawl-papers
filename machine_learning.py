@@ -5,17 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-urls = [
-    'https://openaccess.thecvf.com/menu', # CVPR, WACV, ICCV
-    'https://www.ecva.net/papers.php', # ECCV
-    'https://cvpr.thecvf.com/Conferences/2024/AcceptedPapers',
-    'https://github.com/lixin4ever/Conference-Acceptance-Rate'
-]
-
 conf_pattern = {
-    'cvpr': ['https://openaccess.thecvf.com/CVPR20%s?day=all', [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]],
-    'wacv' : ['https://openaccess.thecvf.com/WACV20%s', [20, 21, 22, 23, 24]],
-    'iccv': ['https://openaccess.thecvf.com/ICCV20%s?day=all', [13, 15, 17, 19, 21, 23]],
+    'nips': ['https://papers.nips.cc/paper_files/paper/%s', [1987, 2023, 1]],
 
 }
 
