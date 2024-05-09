@@ -14,11 +14,21 @@ from datetime import datetime
 # Security and Privacy: ['PETS', 'S&P', 'USENIX', 'SaTML', 'NDSS', 'ACM CCS'] # https://people.engr.tamu.edu/guofei/sec_conf_stat.htm
 # https://github.com/ZhengyuZhao/AI-Security-and-Privacy-Events
 
-def get_data_iclr():
-    data_iclr = {}
-    for year in range(2018, 2025, 1):
-        iclr_url = f'https://iclr.cc/virtual/{year}/papers.html?filter=titles'
-        data = requests.get(iclr_url)
+conf_list = {
+    'neurips': ['https://neurips.cc/virtual/%s/papers.html?filter=titles', 2006, 2025],
+    'icml':  ['https://icml.cc/virtual/%s/papers.html?filter=titles', 2017, 2025],
+    'iclr':  ['https://iclr.cc/virtual/%s/papers.html?filter=titles', 2018, 2025],
+}
+
+data_all = {}
+
+def get_data_conf(conf_name):
+    print(f"Process conf: {conf_name}")
+    data_conf = {}
+    conf_pattern = conf_list[conf_name]
+    for year in range(conf_pattern[1], conf_pattern[2], 1):
+        conf_url = conf_pattern[0] % year
+        data = requests.get(conf_url)
         data.encoding = data.apparent_encoding
         soup = BeautifulSoup(data.text, 'html.parser')
         papers = soup.find_all('li')
@@ -29,14 +39,17 @@ def get_data_iclr():
             alink = item.find('a')
             if f'/virtual/{year}/poster' in alink['href']:
                 cnt += 1
-                # print(cnt, alink['href'], alink.text, '/virtual/2022' in alink)
                 data_year.append({'url': f'https://iclr.cc{alink["href"]}', 'title': alink.text})
         print(year, cnt)
 
         if cnt > 0:
-            data_iclr[f'{year}'] = data_year
+            data_conf[f'{year}'] = data_year
+    data_all[conf_name] = data_conf
+for k in conf_list.keys():
+    get_data_conf(k)
 
-    time_format = f'{datetime.now().strftime("%y%m%d")}'
-    with open(f'./tmp/iclr_{time_format}.json', 'w') as fw:
-        json.dump(data_iclr, fw, indent=2)
+
+time_format = f'{datetime.now().strftime("%y%m%d")}'
+with open(f'./tmp/neurips_icml_iclr_{time_format}.json', 'w') as fw:
+    json.dump(data_all, fw, indent=2)
 
